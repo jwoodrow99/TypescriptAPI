@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  mariadb:
+    image: mariadb:10.7.3
+    ports:
+      - 3306:3306
+    volumes: 
+      - ./volumes/mariadb:/var/lib/mysql
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: password
+
+  pgsql:
+    image: postgres:14.2
+    ports:
+      - 5432:5432
+    volumes: 
+      - ./volumes/pgsql:/var/lib/postgresql/data
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: password
+
+  node:
+    image: node:17.7.1
+    user: "node"
+    working_dir: /app
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./:/app
+    ports:
+      - 5000:5000
+    command: bash -c "npm run dev"
+    links:
+      - pgsql
